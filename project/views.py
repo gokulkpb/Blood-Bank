@@ -61,7 +61,8 @@ def login(request):
 
 
 def display(request):
-    return render(request, 'display.html')
+    lst = person.objects.all()
+    return render(request, 'display.html', {'lst':lst})
 
 def logout(request):
     auth.logout(request)
