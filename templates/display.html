@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
 </head>
 <body>
-    <a href="/logout" ><h2 style="margin-left:80%"><button class="btn btn-primary">Logout</button></h2></a>  
+    <h2 style="margin-left:80%"><a href="/logout" ><button class="btn btn-primary">Logout</button></a></h2>
 <div style="margin: 5% 0 0 0%">
-    {% if user.is_authenticated %}
-        <h1 style='margin:-2% 0 0 0'>Hello, {{ user.first_name }}</h1>
+   {% if 'username' in request.session %} 
+        <h1 style='margin:-2% 0 0 0'>Hello, {{ request.session.Name }}</h1>
     {% endif %}
     <a href="/add-donor" ><h2 style="margin-left:80%"><button class="btn btn-primary">Add Donor</button></h2></a>
     <h5>Details of the donors</h5>

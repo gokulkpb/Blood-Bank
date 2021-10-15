@@ -4,15 +4,20 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 
 def home(request):
-    return render(request, 'login.html')
+    if 'username' in request.session:
+        return redirect('display')
+    else:
+        return render(request, 'login.html')
     
 def signup(request):
-    if request.method == 'POST':
+    if 'username' in request.session:
+        return redirect('display')
+    elif request.method == 'POST':
        fname = request.POST['fname']
        lname = request.POST['lname']
        user = request.POST['user']
        email = request.POST['email']
-       password = request.POST['password']
+       password = request.POST['pswd']
        if User.objects.filter(username = user).exists():
            messages.info(request, 'Username already exists!')
            return redirect('signup')
@@ -29,6 +34,8 @@ def signup(request):
 
 #changed to add donor
 def add_donor(request):
+    if 'username' not in request.session:
+        return redirect('login')
     if request.method == 'POST':
         name = request.POST['name']
         age = request.POST['age']
@@ -43,14 +50,18 @@ def add_donor(request):
         return render(request, 'index.html')
 
 def login(request):
-    if request.method == 'POST':
-        user = request.POST['user']
+    if 'username' in request.session:
+        return redirect('display')
+    elif request.method == 'POST':
+        username = request.POST['user']
         passw = request.POST['password']
         
-        user = auth.authenticate(username = user, password = passw)
+        user = auth.authenticate(username = username, password = passw)
 
         if user is not None:
-            auth.login(request, user)
+            request.session['username'] = username
+            request.session['Name'] = user.first_name
+            #auth.login(request, user)
             return redirect('display')
         else:
             messages.info(request, 'Credentials not found!')
@@ -61,9 +72,14 @@ def login(request):
 
 
 def display(request):
-    lst = person.objects.all()
-    return render(request, 'display.html', {'lst':lst})
+    if 'username' in request.session:
+        lst = person.objects.all()
+        return render(request, 'display.html', {'lst':lst})
+    else:
+        return redirect('login')
 
 def logout(request):
-    auth.logout(request)
+    if 'username' in request.session:
+        request.session.flush()
     return redirect('/')
+        
